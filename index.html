@@ -67,7 +67,8 @@
         }
         
         #touch-controls { display: none; }
-        @media (pointer: coarse), (max-width: 1024px) { 
+        /* Показываем управление ТОЛЬКО на устройствах с тачскрином, игнорируя размер окна (полезно для iframe) */
+        @media (pointer: coarse) { 
             #touch-controls { display: flex; } 
         }
         
