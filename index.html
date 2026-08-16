@@ -67,9 +67,11 @@
         }
         
         #touch-controls { display: none; }
+        #pause-btn { display: none; }
         /* Показываем управление ТОЛЬКО на устройствах с тачскрином, игнорируя размер окна (полезно для iframe) */
-        @media (pointer: coarse) { 
-            #touch-controls { display: flex; } 
+        @media (pointer: coarse) {
+            #touch-controls { display: flex; }
+            #pause-btn:not(.hidden) { display: flex; }
         }
         
         .btn-touch {
@@ -98,8 +100,8 @@
                 <span id="timer-text">Время: 0.0с</span>
             </div>
         </div>
-        <button id="audio-toggle-btn" class="pointer-events-auto bg-blue-500/80 hover:bg-blue-400 text-white pixel-text p-2 rounded-lg border-2 border-white text-xs md:text-sm backdrop-blur-sm transition-colors drop-shadow-md">
-            🔊 ЗВУК ВКЛ
+        <button id="pause-btn" class="hidden btn-touch pointer-events-auto w-14 h-14 rounded-full flex justify-center items-center text-xl text-white font-bold drop-shadow-md">
+            ⏸
         </button>
     </div>
 
@@ -113,21 +115,45 @@
                 Стрелочки / WASD - Движение<br>
                 Вверх - Двойной прыжок (прыгай на врагов!)
             </p>
-            
+
+            <div class="flex items-center justify-center gap-3">
+                <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
+                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="ru">RU</button>
+                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="en">EN</button>
+                </div>
+                <button class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"></button>
+            </div>
+
             <div id="name-input-container" class="w-full flex flex-col items-center">
                 <input type="text" id="player-name-input" maxlength="15" placeholder="ВВЕДИ НИК" class="text-slate-800 bg-slate-100 text-center font-['Press_Start_2P'] text-base md:text-xs p-3 border-4 border-slate-800 focus:outline-none focus:bg-white w-full max-w-xs shadow-[4px_4px_0_rgba(0,0,0,0.3)] transition-colors placeholder-slate-400">
             </div>
 
             <div id="leaderboard-section" class="w-full bg-blue-900/60 p-3 border-4 border-slate-800 shadow-[4px_4px_0_rgba(0,0,0,0.3)] hidden">
-                <h2 class="text-center text-[#fde047] pixel-text text-[10px] md:text-xs mb-3 drop-shadow-md">🏆 ТОП НЕДЕЛИ 🏆</h2>
+                <h2 id="leaderboard-title" class="text-center text-[#fde047] pixel-text text-[10px] md:text-xs mb-3 drop-shadow-md">🏆 ТОП НЕДЕЛИ 🏆</h2>
                 <div id="leaderboard-list" class="overflow-y-auto max-h-[160px] space-y-2 font-['Press_Start_2P'] text-[8px] md:text-[10px] pr-2">
-                    <div class="text-center text-white/70 py-2 leading-loose">Загрузка рекордов...</div>
+                    <div id="leaderboard-loading-msg" class="text-center text-white/70 py-2 leading-loose">Загрузка рекордов...</div>
                 </div>
             </div>
 
             <button id="start-btn" class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs">
                 ИГРАТЬ
             </button>
+        </div>
+    </div>
+
+    <div id="pause-overlay" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white z-50 p-4">
+        <div class="bg-[#3b82f6] border-4 border-white p-6 max-w-sm w-full flex flex-col items-center shadow-[8px_8px_0_rgba(0,0,0,0.6)] gap-5">
+            <h1 id="pause-title" class="text-xl md:text-2xl text-[#fde047] pixel-text text-center"></h1>
+
+            <div class="flex items-center justify-center gap-3">
+                <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
+                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="ru">RU</button>
+                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="en">EN</button>
+                </div>
+                <button class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"></button>
+            </div>
+
+            <button id="resume-btn" class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs"></button>
         </div>
     </div>
 
@@ -151,19 +177,28 @@
         const scoreText = document.getElementById('score-text');
         const timerContainer = document.getElementById('timer-container');
         const timerText = document.getElementById('timer-text');
-        const audioToggleBtn = document.getElementById('audio-toggle-btn');
         const nameInputContainer = document.getElementById('name-input-container');
         const nameInput = document.getElementById('player-name-input');
         const leaderboardList = document.getElementById('leaderboard-list');
         const leaderboardSection = document.getElementById('leaderboard-section');
+        const leaderboardTitleEl = document.getElementById('leaderboard-title');
+        const pauseBtn = document.getElementById('pause-btn');
+        const pauseOverlay = document.getElementById('pause-overlay');
+        const pauseTitleEl = document.getElementById('pause-title');
+        const resumeBtn = document.getElementById('resume-btn');
 
         let isAudioInitialized = false;
-        let isMuted = false;
+        let isMuted = localStorage.getItem('cnc_muted') === 'true';
+        let lang = localStorage.getItem('cnc_lang') || 'ru';
         let melodySynth, bassSynth, meowSynth, slurpNoise, slurpFilter;
         let playerName = "";
         let startTime = 0;
         let finalTime = 0;
-        let gameState = 'START'; 
+        let totalPausedMs = 0;
+        let pauseStartedAt = 0;
+        let overlayMode = 'start';
+        let scoreState = 'normal';
+        let gameState = 'START';
 
         nameInput.addEventListener('input', (e) => { playerName = e.target.value.trim(); });
         nameInput.addEventListener('keydown', (e) => {
@@ -210,14 +245,14 @@
                     scores.sort((a, b) => a.time - b.time);
                     renderLeaderboardUI(scores.slice(0, 15));
                 }, (error) => {
-                    leaderboardList.innerHTML = `<div class="text-center text-red-400 text-xs py-4 pixel-text">Ошибка сети</div>`;
+                    leaderboardList.innerHTML = `<div class="text-center text-red-400 text-xs py-4 pixel-text">${t('leaderboard_error')}</div>`;
                 });
             });
         };
 
         function renderLeaderboardUI(scores) {
             if (scores.length === 0) {
-                leaderboardList.innerHTML = `<div class="text-center text-white/50 py-4 leading-loose">Пока нет рекордов.<br>Стань первым!</div>`;
+                leaderboardList.innerHTML = `<div class="text-center text-white/50 py-4 leading-loose">${t('leaderboard_empty')}</div>`;
                 return;
             }
             leaderboardList.innerHTML = '';
@@ -229,7 +264,7 @@
                         <span class="w-6 text-right">${index + 1}.</span>
                         <span class="truncate max-w-[100px] md:max-w-[140px]">${score.name}</span>
                     </div>
-                    <div class="bg-black/50 px-2 py-1">${score.time.toFixed(2)}с</div>
+                    <div class="bg-black/50 px-2 py-1">${score.time.toFixed(2)}${t('time_unit')}</div>
                 `;
                 leaderboardList.appendChild(el);
             });
@@ -305,6 +340,7 @@
             if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
             if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
             if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') keys.up = true;
+            if (e.code === 'Escape') togglePause();
         });
         window.addEventListener('keyup', (e) => {
             if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
@@ -518,8 +554,8 @@
                     level.milksCollected -= dropCount;
                     
                     if (level.milksCollected < level.totalMilks) {
-                        scoreText.innerText = `Сгущенка: ${level.milksCollected} / ${level.totalMilks}`;
-                        scoreText.classList.remove('text-green-400', 'animate-pulse');
+                        scoreState = 'normal';
+                        updateScoreText();
                     }
                     
                     for (let i = 0; i < dropCount; i++) {
@@ -851,12 +887,166 @@
             }
         }
 
+        const translations = {
+            ru: {
+                doc_title: 'Котик и Сгущенка',
+                menu_title: 'КОТИК И<br>СГУЩЕНКА',
+                menu_desc: 'Собери все {N} баночек как можно быстрее!<br>Остерегайся злых собачек и колючих кактусов.<br><br><b>Управление:</b><br>Стрелочки / WASD - Движение<br>Вверх - Двойной прыжок (прыгай на врагов!)',
+                name_placeholder: 'ВВЕДИ НИК',
+                leaderboard_title: '🏆 ТОП НЕДЕЛИ 🏆',
+                leaderboard_loading: 'Загрузка рекордов...',
+                leaderboard_empty: 'Пока нет рекордов.<br>Стань первым!',
+                leaderboard_error: 'Ошибка сети',
+                play: 'ИГРАТЬ',
+                play_again: 'ИГРАТЬ СНОВА',
+                anon_prefix: 'Аноним_',
+                score_label: 'Сгущенка',
+                score_ready: 'БЕГИ К ФЛАГУ!',
+                score_blocked: 'НУЖНО {N} БАНОК!',
+                time_label: 'Время',
+                time_unit: 'с',
+                sound_on: '🔊 ЗВУК ВКЛ',
+                sound_off: '🔇 ЗВУК ВЫКЛ',
+                win_title: 'ПОБЕДА!',
+                win_desc: 'Твое время: <span class="text-[#fde047] text-sm md:text-base">{TIME} сек!</span><br><br>Котик собрал все {N} банок легендарной сгущенки. Теперь он стал восхитительно пухлым, запасов хватит на всю зиму, а пузико полно счастья. Мур-мяу!',
+                pause_title: 'ПАУЗА',
+                resume: 'ПРОДОЛЖИТЬ'
+            },
+            en: {
+                doc_title: 'Cat and Condensed Milk',
+                menu_title: 'CAT &<br>CONDENSED MILK',
+                menu_desc: 'Collect all {N} jars as fast as you can!<br>Watch out for angry doggos and spiky cacti.<br><br><b>Controls:</b><br>Arrows / WASD - Move<br>Up - Double jump (jump on enemies!)',
+                name_placeholder: 'ENTER NICK',
+                leaderboard_title: '🏆 TOP OF THE WEEK 🏆',
+                leaderboard_loading: 'Loading scores...',
+                leaderboard_empty: 'No records yet.<br>Be the first!',
+                leaderboard_error: 'Network error',
+                play: 'PLAY',
+                play_again: 'PLAY AGAIN',
+                anon_prefix: 'Anon_',
+                score_label: 'Milk',
+                score_ready: 'RUN TO THE FLAG!',
+                score_blocked: 'NEED {N} JARS!',
+                time_label: 'Time',
+                time_unit: 's',
+                sound_on: '🔊 SOUND ON',
+                sound_off: '🔇 SOUND OFF',
+                win_title: 'VICTORY!',
+                win_desc: 'Your time: <span class="text-[#fde047] text-sm md:text-base">{TIME} sec!</span><br><br>The cat collected all {N} jars of legendary condensed milk. Now perfectly, deliciously round, with enough stashed away for the whole winter and a belly full of happiness. Purr-meow!',
+                pause_title: 'PAUSED',
+                resume: 'RESUME'
+            }
+        };
+
+        function t(key) { return translations[lang][key]; }
+
+        function getElapsedSeconds() {
+            return (Date.now() - startTime - totalPausedMs) / 1000;
+        }
+
+        function renderTimer(seconds, decimals = 1) {
+            timerText.innerText = `${t('time_label')}: ${seconds.toFixed(decimals)}${t('time_unit')}`;
+        }
+
+        function updateScoreText() {
+            scoreText.classList.remove('text-green-400', 'animate-pulse', 'text-red-400');
+            if (scoreState === 'ready') {
+                scoreText.innerText = t('score_ready');
+                scoreText.classList.add('text-green-400', 'animate-pulse');
+            } else if (scoreState === 'blocked') {
+                scoreText.innerText = t('score_blocked').replace('{N}', level.totalMilks);
+                scoreText.classList.add('text-red-400');
+            } else {
+                scoreText.innerText = `${t('score_label')}: ${level.milksCollected} / ${level.totalMilks}`;
+            }
+        }
+
+        function renderOverlayContent() {
+            if (overlayMode === 'win') {
+                overlayTitle.innerHTML = t('win_title');
+                overlayDesc.innerHTML = t('win_desc').replace('{TIME}', finalTime.toFixed(2)).replace('{N}', level.totalMilks);
+                startBtn.innerText = t('play_again');
+            } else {
+                overlayTitle.innerHTML = t('menu_title');
+                overlayDesc.innerHTML = t('menu_desc').replace('{N}', level.totalMilks);
+                startBtn.innerText = t('play');
+            }
+        }
+
+        function updateAudioButtons() {
+            document.querySelectorAll('.audio-toggle-btn').forEach(btn => {
+                btn.innerText = isMuted ? t('sound_off') : t('sound_on');
+                btn.classList.toggle('bg-red-500/80', isMuted);
+                btn.classList.toggle('hover:bg-red-400', isMuted);
+                btn.classList.toggle('bg-blue-500/80', !isMuted);
+                btn.classList.toggle('hover:bg-blue-400', !isMuted);
+            });
+        }
+
+        function updateLangButtons() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                const active = btn.dataset.lang === lang;
+                btn.classList.toggle('bg-[#22c55e]', active);
+                btn.classList.toggle('shadow-[2px_2px_0_rgba(0,0,0,0.4)]', active);
+            });
+        }
+
+        function applyLanguage() {
+            document.title = t('doc_title');
+            document.documentElement.lang = lang;
+            renderOverlayContent();
+            nameInput.placeholder = t('name_placeholder');
+            leaderboardTitleEl.innerText = t('leaderboard_title');
+            const loadingEl = document.getElementById('leaderboard-loading-msg');
+            if (loadingEl) loadingEl.innerText = t('leaderboard_loading');
+            updateScoreText();
+            updateAudioButtons();
+            updateLangButtons();
+            pauseTitleEl.innerText = t('pause_title');
+            resumeBtn.innerText = t('resume');
+            if (gameState === 'PLAYING' || gameState === 'PAUSED') renderTimer(getElapsedSeconds());
+        }
+
+        function setLanguage(newLang) {
+            if (lang === newLang) return;
+            lang = newLang;
+            localStorage.setItem('cnc_lang', lang);
+            applyLanguage();
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            localStorage.setItem('cnc_muted', isMuted);
+            if (isAudioInitialized) Tone.Destination.mute = isMuted;
+            updateAudioButtons();
+        }
+
+        function pauseGame() {
+            if (gameState !== 'PLAYING') return;
+            gameState = 'PAUSED';
+            pauseStartedAt = Date.now();
+            if (isAudioInitialized) Tone.Transport.pause();
+            pauseOverlay.classList.remove('hidden');
+        }
+
+        function resumeGame() {
+            if (gameState !== 'PAUSED') return;
+            totalPausedMs += Date.now() - pauseStartedAt;
+            gameState = 'PLAYING';
+            if (isAudioInitialized) Tone.Transport.start();
+            pauseOverlay.classList.add('hidden');
+        }
+
+        function togglePause() {
+            if (gameState === 'PLAYING') pauseGame();
+            else if (gameState === 'PAUSED') resumeGame();
+        }
+
         function update() {
             if (gameState === 'PLAYING' || gameState === 'ENDING') {
-                
+
                 if (gameState === 'PLAYING') {
-                    const currentTime = (Date.now() - startTime) / 1000;
-                    timerText.innerText = `Время: ${currentTime.toFixed(1)}с`;
+                    renderTimer(getElapsedSeconds());
                 }
 
                 if (gameState === 'ENDING') {
@@ -884,17 +1074,11 @@
 
                 for (let m of level.milks) {
                     if (!m.collected && player.x < m.x + m.width && player.x + player.width > m.x && player.y < m.y + m.height && player.y + player.height > m.y) {
-                        m.collected = true; 
+                        m.collected = true;
                         level.milksCollected++;
-                        
-                        if (level.milksCollected >= level.totalMilks) {
-                            scoreText.innerText = "БЕГИ К ФЛАГУ!";
-                            scoreText.classList.add('text-green-400', 'animate-pulse');
-                        } else {
-                            scoreText.innerText = `Сгущенка: ${level.milksCollected} / ${level.totalMilks}`;
-                            scoreText.classList.remove('text-green-400', 'animate-pulse');
-                        }
-                        
+                        scoreState = (level.milksCollected >= level.totalMilks) ? 'ready' : 'normal';
+                        updateScoreText();
+
                         if (isAudioInitialized) triggerSlurp();
                     }
                 }
@@ -917,17 +1101,11 @@
                     let bm = level.bouncingMilks[i];
                     bm.update(level.platforms);
                     if (!bm.collected && bm.collectableDelay <= 0 && player.x < bm.x + bm.width && player.x + player.width > bm.x && player.y < bm.y + bm.height && player.y + player.height > bm.y) {
-                        bm.collected = true; 
+                        bm.collected = true;
                         level.milksCollected++;
-                        
-                        if (level.milksCollected >= level.totalMilks) {
-                            scoreText.innerText = "БЕГИ К ФЛАГУ!";
-                            scoreText.classList.add('text-green-400', 'animate-pulse');
-                        } else {
-                            scoreText.innerText = `Сгущенка: ${level.milksCollected} / ${level.totalMilks}`;
-                            scoreText.classList.remove('text-green-400', 'animate-pulse');
-                        }
-                        
+                        scoreState = (level.milksCollected >= level.totalMilks) ? 'ready' : 'normal';
+                        updateScoreText();
+
                         if (isAudioInitialized) triggerSlurp();
                         level.bouncingMilks.splice(i, 1);
                     }
@@ -940,23 +1118,23 @@
                         player.y + player.height > level.flagpole.y) {
                         
                         if (level.milksCollected >= level.totalMilks) {
-                            gameState = 'ENDING'; 
-                            finalTime = (Date.now() - startTime) / 1000;
-                            timerText.innerText = `Время: ${finalTime.toFixed(1)}с`; 
-                            
+                            gameState = 'ENDING';
+                            pauseBtn.classList.add('hidden');
+                            finalTime = getElapsedSeconds();
+                            renderTimer(finalTime, 2);
+
                             if (isAudioInitialized && !isMuted) {
                                 Tone.Transport.stop();
                                 melodySynth.triggerAttackRelease("C5", "8n", Tone.now()); melodySynth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
                                 melodySynth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4); melodySynth.triggerAttackRelease("C6", "2n", Tone.now() + 0.6);
                             }
                         } else {
-                            scoreText.innerText = "НУЖНО 30 БАНОК!";
-                            scoreText.classList.add('text-red-400');
-                            scoreText.classList.remove('text-green-400', 'animate-pulse');
+                            scoreState = 'blocked';
+                            updateScoreText();
                         }
-                    } else if (level.milksCollected < level.totalMilks && scoreText.innerText === "НУЖНО 30 БАНОК!") {
-                        scoreText.innerText = `Сгущенка: ${level.milksCollected} / ${level.totalMilks}`;
-                        scoreText.classList.remove('text-red-400');
+                    } else if (level.milksCollected < level.totalMilks && scoreState === 'blocked') {
+                        scoreState = 'normal';
+                        updateScoreText();
                     }
                 }
 
@@ -979,46 +1157,42 @@
 
         async function startGame() {
             nameInput.blur(); window.scrollTo(0, 0);
-            if (!playerName) playerName = "Аноним_" + Math.floor(Math.random() * 1000);
+            if (!playerName) playerName = t('anon_prefix') + Math.floor(Math.random() * 1000);
             await initAudio();
             level.generateLevel(); player.reset(); camera.x = 0;
-            scoreText.innerText = `Сгущенка: 0 / ${level.totalMilks}`;
-            scoreText.classList.remove('text-green-400', 'text-red-400', 'animate-pulse');
-            timerContainer.classList.remove('hidden'); timerText.innerText = `Время: 0.0с`;
+            totalPausedMs = 0;
+            scoreState = 'normal'; updateScoreText();
+            timerContainer.classList.remove('hidden'); renderTimer(0);
             overlay.classList.add('opacity-0');
             setTimeout(() => {
                 overlay.classList.add('hidden');
-                nameInputContainer.classList.add('hidden'); 
-                leaderboardSection.classList.add('hidden'); 
+                nameInputContainer.classList.add('hidden');
+                leaderboardSection.classList.add('hidden');
                 startTime = Date.now(); gameState = 'PLAYING';
+                pauseBtn.classList.remove('hidden');
             }, 300);
         }
 
         function gameWin() {
-            gameState = 'WIN'; 
+            gameState = 'WIN';
             if (window.saveScoreToCloud) window.saveScoreToCloud(playerName, finalTime);
-            
+
             timerContainer.classList.add('hidden'); overlay.classList.remove('hidden');
             setTimeout(() => {
-                overlay.classList.remove('opacity-0'); overlayTitle.innerHTML = 'ПОБЕДА!';
-                overlayDesc.innerHTML = `Твое время: <span class="text-[#fde047] text-sm md:text-base">${finalTime.toFixed(2)} сек!</span><br><br>Котик собрал все ${level.totalMilks} банок легендарной сгущенки. Теперь он стал восхитительно пухлым, запасов хватит на всю зиму, а пузико полно счастья. Мур-мяу!`;
-                startBtn.innerText = 'ИГРАТЬ СНОВА'; leaderboardSection.classList.remove('hidden'); 
+                overlay.classList.remove('opacity-0');
+                overlayMode = 'win';
+                renderOverlayContent();
+                leaderboardSection.classList.remove('hidden');
             }, 50);
         }
 
         startBtn.addEventListener('click', startGame);
-        audioToggleBtn.addEventListener('click', () => {
-            isMuted = !isMuted;
-            if (isAudioInitialized) Tone.Destination.mute = isMuted; 
-            if (isMuted) {
-                audioToggleBtn.innerText = '🔇 ЗВУК ВЫКЛ';
-                audioToggleBtn.classList.replace('bg-blue-500/80', 'bg-red-500/80'); audioToggleBtn.classList.replace('hover:bg-blue-400', 'hover:bg-red-400');
-            } else {
-                audioToggleBtn.innerText = '🔊 ЗВУК ВКЛ';
-                audioToggleBtn.classList.replace('bg-red-500/80', 'bg-blue-500/80'); audioToggleBtn.classList.replace('hover:bg-red-400', 'hover:bg-blue-400');
-            }
-        });
+        resumeBtn.addEventListener('click', resumeGame);
+        pauseBtn.addEventListener('click', togglePause);
+        document.querySelectorAll('.audio-toggle-btn').forEach(btn => btn.addEventListener('click', toggleMute));
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
 
+        applyLanguage();
         gameLoop();
     </script>
 </body>
