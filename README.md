@@ -1,8 +1,20 @@
 # Котик и Сгущенка (Cat and Condensed Milk)
 
+<p align="center">
+  <a href="https://github.com/thatguynikita/condensed-milk-quest/actions/workflows/ci.yml"><img src="https://github.com/thatguynikita/condensed-milk-quest/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/thatguynikita/condensed-milk-quest" alt="License: MIT"></a>
+  <a href="https://cat.nikita.sh"><img src="https://img.shields.io/badge/site-cat.nikita.sh-brightgreen" alt="Live site"></a>
+</p>
+
+<p align="center">
+  <img src="assets/gameplay.gif" width="480" alt="Gameplay: the cat running and jumping across platforms, collecting cans of condensed milk">
+</p>
+
+<p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b></p>
+
 A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
-cacti, reach the flag. Playable standalone at cat.nikita.sh, and embedded as
-an iframe "app" inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
+cacti, reach the flag. Playable standalone, and embedded as an iframe "app"
+inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
 terminal-themed portfolio.
 
 Built with vanilla JS and the Canvas 2D API — no game engine — bundled with
@@ -34,7 +46,7 @@ src/
   level/
     Level.js               Procedural level generation + world rendering
     collision.js            Shared AABB overlap check, used by every collision test
-  render/draw.js            Per-frame draw orchestration (sky, clouds, world, entities)
+  render/draw.js             Per-frame draw orchestration (sky, clouds, world, entities)
   ui/
     hud.js                   Score/timer HUD rendering
     menus.js                 Start/pause/win overlays, language & sound toggles,
@@ -85,3 +97,7 @@ Not wired up yet. `npm run build` produces a static `dist/` — publishing it
 is currently a manual step. The plan is to eventually match whatever deploy
 approach nikita.sh settles on for itself; that isn't finalized there yet, so
 this repo isn't guessing at one in the meantime.
+
+## License
+
+[MIT](LICENSE).
