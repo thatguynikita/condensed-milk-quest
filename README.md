@@ -94,10 +94,22 @@ values, just copy `.env.example` to `.env` and fill them in.
 
 ## Deploy
 
-Not wired up yet. `npm run build` produces a static `dist/` — publishing it
-is currently a manual step. The plan is to eventually match whatever deploy
-approach nikita.sh settles on for itself; that isn't finalized there yet, so
-this repo isn't guessing at one in the meantime.
+```bash
+npm run deploy -- --dry-run   # preview the upload, no network calls
+npm run deploy                 # build + upload dist/ to Yandex Object Storage
+```
+
+Same approach as the sibling [nikita.sh](https://github.com/thatguynikita/nikita.sh)
+repo: `scripts/deploy.mjs` shells out to the Yandex Cloud CLI (`yc`, must be
+installed and authenticated) and uploads everything under `dist/` via
+`yc storage s3api put-object`, with `index.html` always going last so it
+never points at a hashed asset that isn't uploaded yet. `npm run build`
+runs first automatically, so the deployed build is always fresh.
+
+The target bucket isn't hardcoded anywhere in this repo — set
+`CAT_NIKITA_BUCKET` (in your local `.env`, or exported in your shell) or
+pass `--bucket <name>` explicitly. See `scripts/deploy.mjs`'s header
+comment for the full flag/env var list.
 
 ## License
 

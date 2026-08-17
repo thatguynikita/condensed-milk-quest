@@ -14,5 +14,13 @@ export default [
       },
     },
   },
+  {
+    files: ['scripts/**/*.mjs', '*.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   prettier,
 ];
