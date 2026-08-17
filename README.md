@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Tone.js-8A2BE2" alt="Tone.js">
 </p>
 
-<p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b></p>
+<p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b> · <a href="assets/gameplay.mp4">🎬 Watch gameplay</a></p>
 
 A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
 cacti, reach the flag. Playable standalone, and embedded as an iframe "app"
