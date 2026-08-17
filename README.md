@@ -1,8 +1,23 @@
 # Котик и Сгущенка (Cat and Condensed Milk)
 
+<p align="center">
+  <a href="https://github.com/thatguynikita/condensed-milk-quest/actions/workflows/ci.yml"><img src="https://github.com/thatguynikita/condensed-milk-quest/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/thatguynikita/condensed-milk-quest" alt="License: MIT"></a>
+  <a href="https://github.com/thatguynikita/nikita.sh"><img src="https://img.shields.io/badge/universe-nikita.sh-3dff8a" alt="Part of the nikita.sh universe"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black" alt="Firebase">
+  <img src="https://img.shields.io/badge/Tone.js-8A2BE2" alt="Tone.js">
+</p>
+
+<p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b></p>
+
 A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
-cacti, reach the flag. Playable standalone at cat.nikita.sh, and embedded as
-an iframe "app" inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
+cacti, reach the flag. Playable standalone, and embedded as an iframe "app"
+inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
 terminal-themed portfolio.
 
 Built with vanilla JS and the Canvas 2D API — no game engine — bundled with
@@ -20,31 +35,24 @@ control scheme for mobile, and a weekly Firebase-backed leaderboard.
 
 ## Architecture
 
-```
-index.html            DOM skeleton only — canvas, menus, touch controls
-src/
-  main.js              Composition root: owns the game loop, input listeners,
-                        instantiates player/level/butterflies
-  state.js              Shared runtime state (game phase, camera, keys, timers)
-  config.js              Tunable gameplay constants (physics, level generation, timers)
-  styles/main.css         Tailwind + the handful of custom CSS rules (pixel-text outline,
-                           touch-control styling, pointer:coarse media query)
-  entities/                One file per game object: Player, DogEnemy, CactusEnemy,
-                            CondensedMilk, BouncingMilk, Butterfly
-  level/
-    Level.js               Procedural level generation + world rendering
-    collision.js            Shared AABB overlap check, used by every collision test
-  render/draw.js            Per-frame draw orchestration (sky, clouds, world, entities)
-  ui/
-    hud.js                   Score/timer HUD rendering
-    menus.js                 Start/pause/win overlays, language & sound toggles,
-                              startGame/gameWin/pause-resume
-    touchControls.js          Mobile on-screen button bindings
-  i18n/translations.js        RU/EN copy + t()/getLang()/setLang()
-  audio/synths.js              Tone.js synth setup and all sound-effect triggers
-  net/leaderboard.js            Firebase init, score read/write, leaderboard rendering
-tests/                          Vitest unit tests (collision, level generation, i18n parity)
-```
+| Path | What's there |
+|---|---|
+| `index.html` | DOM skeleton only — canvas, menus, touch controls |
+| `src/main.js` | Composition root: owns the game loop, input listeners, instantiates player/level/butterflies |
+| `src/state.js` | Shared runtime state (game phase, camera, keys, timers) |
+| `src/config.js` | Tunable gameplay constants (physics, level generation, timers) |
+| `src/styles/main.css` | Tailwind + the handful of custom CSS rules (pixel-text outline, touch-control styling, `pointer: coarse` media query) |
+| `src/entities/*.js` | One file per game object: `Player`, `DogEnemy`, `CactusEnemy`, `CondensedMilk`, `BouncingMilk`, `Butterfly` |
+| `src/level/Level.js` | Procedural level generation + world rendering |
+| `src/level/collision.js` | Shared AABB overlap check, used by every collision test |
+| `src/render/draw.js` | Per-frame draw orchestration (sky, clouds, world, entities) |
+| `src/ui/hud.js` | Score/timer HUD rendering |
+| `src/ui/menus.js` | Start/pause/win overlays, language & sound toggles, `startGame`/`gameWin`/pause-resume |
+| `src/ui/touchControls.js` | Mobile on-screen button bindings |
+| `src/i18n/translations.js` | RU/EN copy + `t()`/`getLang()`/`setLang()` |
+| `src/audio/synths.js` | Tone.js synth setup and all sound-effect triggers |
+| `src/net/leaderboard.js` | Firebase init, score read/write, leaderboard rendering |
+| `tests/` | Vitest unit tests (collision, level generation, i18n parity) |
 
 Gameplay tuning knobs live in `config.js`; purely cosmetic pixel-art numbers
 (sprite coordinates inside each entity's `draw()`) stay inline, since those
@@ -85,3 +93,7 @@ Not wired up yet. `npm run build` produces a static `dist/` — publishing it
 is currently a manual step. The plan is to eventually match whatever deploy
 approach nikita.sh settles on for itself; that isn't finalized there yet, so
 this repo isn't guessing at one in the meantime.
+
+## License
+
+[MIT](LICENSE).

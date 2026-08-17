@@ -4,6 +4,13 @@
   "private": true,
   "type": "module",
   "description": "Котик и Сгущенка — a browser platformer, embedded into nikita.sh's terminal portfolio and playable standalone at cat.nikita.sh",
+  "license": "MIT",
+  "author": "Nikita Chernozipunnikov",
+  "homepage": "https://cat.nikita.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thatguynikita/condensed-milk-quest.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
