@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Security rules for the weekly leaderboard.
+// Not auto-deployed by anything in this repo yet (no Firebase CLI project
+// linked) — paste this into Firebase Console -> Firestore Database -> Rules
+// and Publish. Kept in source control so the rules are versioned alongside
+// the code that depends on them (see src/net/leaderboard.js).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artifacts/{appId}/public/data/leaderboard/{scoreId} {
+      // Reads list the whole collection (client filters to "this week" and
+      // dedupes by name itself) — any signed-in (anonymous is fine) user.
+      allow read: if request.auth != null;
+
+      // Scores are append-only: no editing or deleting an existing entry.
+      allow update, delete: if false;
+
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['name', 'time', 'date'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 15
+        && request.resource.data.time is number
+        && request.resource.data.time > 0
+        && request.resource.data.time < 3600
+        && request.resource.data.date is number
+        && request.resource.data.date < request.time.toMillis() + 60000
+        && request.resource.data.date > request.time.toMillis() - 600000;
+    }
+  }
+}

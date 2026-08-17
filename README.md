@@ -76,6 +76,12 @@ variables rather than hardcoded, so `.env` isn't committed. Copy
 `.env`, the game still runs fine; the leaderboard just silently no-ops
 (`initLeaderboard()` catches init failures).
 
+Server-side validation for the leaderboard's `create` path (name length,
+positive time, roughly-now date, no extra fields) lives in
+[`firestore.rules`](firestore.rules) — paste it into Firebase Console →
+Firestore Database → Rules and publish. Nothing in this repo deploys it
+automatically yet.
+
 ## Scripts
 
 | Command | What it does |
