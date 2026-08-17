@@ -21,14 +21,17 @@ https://github.com/user-attachments/assets/6b9a00f7-c4ee-4529-b4a7-5e83acb0486e
 
 </p>
 
-A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
-cacti, reach the flag. Playable standalone, and embedded as an iframe "app"
-inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
+A small browser platformer, playable standalone or embedded as an iframe
+"app" inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
 terminal-themed portfolio.
 
+- Collect 30 cans of condensed milk, dodge dogs and cacti, race to the flag
+- Bilingual — Russian and English, switchable from the menu
+- Pause menu, plus on-screen touch controls for mobile
+- Weekly leaderboard, backed by Firebase
+
 Built with vanilla JS and the Canvas 2D API — no game engine — bundled with
-[Vite](https://vitejs.dev). Bilingual (RU/EN), with a pause menu, a touch
-control scheme for mobile, and a weekly Firebase-backed leaderboard.
+[Vite](https://vitejs.dev).
 
 ## Stack
 
