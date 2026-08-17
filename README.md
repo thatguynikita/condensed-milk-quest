@@ -35,24 +35,24 @@ control scheme for mobile, and a weekly Firebase-backed leaderboard.
 
 ## Architecture
 
-| Path | What's there |
-|---|---|
-| `index.html` | DOM skeleton only — canvas, menus, touch controls |
-| `src/main.js` | Composition root: owns the game loop, input listeners, instantiates player/level/butterflies |
-| `src/state.js` | Shared runtime state (game phase, camera, keys, timers) |
-| `src/config.js` | Tunable gameplay constants (physics, level generation, timers) |
-| `src/styles/main.css` | Tailwind + the handful of custom CSS rules (pixel-text outline, touch-control styling, `pointer: coarse` media query) |
-| `src/entities/*.js` | One file per game object: `Player`, `DogEnemy`, `CactusEnemy`, `CondensedMilk`, `BouncingMilk`, `Butterfly` |
-| `src/level/Level.js` | Procedural level generation + world rendering |
-| `src/level/collision.js` | Shared AABB overlap check, used by every collision test |
-| `src/render/draw.js` | Per-frame draw orchestration (sky, clouds, world, entities) |
-| `src/ui/hud.js` | Score/timer HUD rendering |
-| `src/ui/menus.js` | Start/pause/win overlays, language & sound toggles, `startGame`/`gameWin`/pause-resume |
-| `src/ui/touchControls.js` | Mobile on-screen button bindings |
-| `src/i18n/translations.js` | RU/EN copy + `t()`/`getLang()`/`setLang()` |
-| `src/audio/synths.js` | Tone.js synth setup and all sound-effect triggers |
-| `src/net/leaderboard.js` | Firebase init, score read/write, leaderboard rendering |
-| `tests/` | Vitest unit tests (collision, level generation, i18n parity) |
+| Path                       | What's there                                                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `index.html`               | DOM skeleton only — canvas, menus, touch controls                                                                     |
+| `src/main.js`              | Composition root: owns the game loop, input listeners, instantiates player/level/butterflies                          |
+| `src/state.js`             | Shared runtime state (game phase, camera, keys, timers)                                                               |
+| `src/config.js`            | Tunable gameplay constants (physics, level generation, timers)                                                        |
+| `src/styles/main.css`      | Tailwind + the handful of custom CSS rules (pixel-text outline, touch-control styling, `pointer: coarse` media query) |
+| `src/entities/*.js`        | One file per game object: `Player`, `DogEnemy`, `CactusEnemy`, `CondensedMilk`, `BouncingMilk`, `Butterfly`           |
+| `src/level/Level.js`       | Procedural level generation + world rendering                                                                         |
+| `src/level/collision.js`   | Shared AABB overlap check, used by every collision test                                                               |
+| `src/render/draw.js`       | Per-frame draw orchestration (sky, clouds, world, entities)                                                           |
+| `src/ui/hud.js`            | Score/timer HUD rendering                                                                                             |
+| `src/ui/menus.js`          | Start/pause/win overlays, language & sound toggles, `startGame`/`gameWin`/pause-resume                                |
+| `src/ui/touchControls.js`  | Mobile on-screen button bindings                                                                                      |
+| `src/i18n/translations.js` | RU/EN copy + `t()`/`getLang()`/`setLang()`                                                                            |
+| `src/audio/synths.js`      | Tone.js synth setup and all sound-effect triggers                                                                     |
+| `src/net/leaderboard.js`   | Firebase init, score read/write, leaderboard rendering                                                                |
+| `tests/`                   | Vitest unit tests (collision, level generation, i18n parity)                                                          |
 
 Gameplay tuning knobs live in `config.js`; purely cosmetic pixel-art numbers
 (sprite coordinates inside each entity's `draw()`) stay inline, since those
@@ -83,14 +83,14 @@ values, just copy `.env.example` to `.env` and fill them in.
 
 ## Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the Vite dev server |
-| `npm run build` | Production build to `dist/` |
+| Command           | What it does                    |
+| ----------------- | ------------------------------- |
+| `npm run dev`     | Start the Vite dev server       |
+| `npm run build`   | Production build to `dist/`     |
 | `npm run preview` | Serve the `dist/` build locally |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier, writes in place |
-| `npm run test` | Vitest |
+| `npm run lint`    | ESLint                          |
+| `npm run format`  | Prettier, writes in place       |
+| `npm run test`    | Vitest                          |
 
 ## Deploy
 

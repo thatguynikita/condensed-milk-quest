@@ -94,7 +94,7 @@ export class Level {
 
     while (currentEnemyX < levelEndX) {
       let overlappingPlatforms = safePlatforms.filter(
-        (p) => currentEnemyX >= p.x + 20 && currentEnemyX <= p.x + p.w - 60
+        (p) => currentEnemyX >= p.x + 20 && currentEnemyX <= p.x + p.w - 60,
       );
 
       if (overlappingPlatforms.length > 0) {

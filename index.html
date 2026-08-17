@@ -1,96 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Котик и Сгущенка</title>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  </head>
+  <body>
     <canvas id="game-canvas"></canvas>
 
-    <div id="ui-layer" class="absolute top-0 left-0 w-full p-4 pointer-events-none flex justify-between items-start z-30">
-        <div class="flex flex-col gap-2">
-            <div class="text-white pixel-text text-sm md:text-xl flex items-center drop-shadow-md">
-                <span id="score-text">Сгущенка: 0 / 30</span>
-            </div>
-            <div class="text-yellow-300 pixel-text text-xs md:text-lg flex items-center drop-shadow-md hidden" id="timer-container">
-                <span id="timer-text">Время: 0.0с</span>
-            </div>
+    <div
+      id="ui-layer"
+      class="absolute top-0 left-0 w-full p-4 pointer-events-none flex justify-between items-start z-30"
+    >
+      <div class="flex flex-col gap-2">
+        <div class="text-white pixel-text text-sm md:text-xl flex items-center drop-shadow-md">
+          <span id="score-text">Сгущенка: 0 / 30</span>
         </div>
-        <button id="pause-btn" class="hidden btn-touch pointer-events-auto w-14 h-14 rounded-full flex justify-center items-center text-xl text-white font-bold drop-shadow-md">
-            ⏸
-        </button>
+        <div
+          class="text-yellow-300 pixel-text text-xs md:text-lg flex items-center drop-shadow-md hidden"
+          id="timer-container"
+        >
+          <span id="timer-text">Время: 0.0с</span>
+        </div>
+      </div>
+      <button
+        id="pause-btn"
+        class="hidden btn-touch pointer-events-auto w-14 h-14 rounded-full flex justify-center items-center text-xl text-white font-bold drop-shadow-md"
+      >
+        ⏸
+      </button>
     </div>
 
-    <div id="overlay" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#3b82f6] border-4 border-white p-6 max-w-lg w-full flex flex-col items-center shadow-[8px_8px_0_rgba(0,0,0,0.6)] gap-5">
-            <h1 id="overlay-title" class="text-2xl md:text-3xl text-[#fde047] pixel-text text-center leading-tight">КОТИК И<br>СГУЩЕНКА</h1>
-            <p id="overlay-desc" class="text-[10px] md:text-xs text-center leading-loose pixel-text">
-                Собери все 30 баночек как можно быстрее!<br>
-                Остерегайся злых собачек и колючих кактусов.<br><br>
-                <b>Управление:</b><br>
-                Стрелочки / WASD - Движение<br>
-                Вверх - Двойной прыжок (прыгай на врагов!)
-            </p>
+    <div
+      id="overlay"
+      class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white z-50 transition-opacity duration-300 p-4"
+    >
+      <div
+        class="bg-[#3b82f6] border-4 border-white p-6 max-w-lg w-full flex flex-col items-center shadow-[8px_8px_0_rgba(0,0,0,0.6)] gap-5"
+      >
+        <h1
+          id="overlay-title"
+          class="text-2xl md:text-3xl text-[#fde047] pixel-text text-center leading-tight"
+        >
+          КОТИК И<br />СГУЩЕНКА
+        </h1>
+        <p id="overlay-desc" class="text-[10px] md:text-xs text-center leading-loose pixel-text">
+          Собери все 30 баночек как можно быстрее!<br />
+          Остерегайся злых собачек и колючих кактусов.<br /><br />
+          <b>Управление:</b><br />
+          Стрелочки / WASD - Движение<br />
+          Вверх - Двойной прыжок (прыгай на врагов!)
+        </p>
 
-            <div class="flex items-center justify-center gap-3">
-                <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
-                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="ru">RU</button>
-                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="en">EN</button>
-                </div>
-                <button class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"></button>
-            </div>
-
-            <div id="name-input-container" class="w-full flex flex-col items-center">
-                <input type="text" id="player-name-input" maxlength="15" placeholder="ВВЕДИ НИК" class="text-slate-800 bg-slate-100 text-center font-['Press_Start_2P'] text-base md:text-xs p-3 border-4 border-slate-800 focus:outline-none focus:bg-white w-full max-w-xs shadow-[4px_4px_0_rgba(0,0,0,0.3)] transition-colors placeholder-slate-400">
-            </div>
-
-            <div id="leaderboard-section" class="w-full bg-blue-900/60 p-3 border-4 border-slate-800 shadow-[4px_4px_0_rgba(0,0,0,0.3)] hidden">
-                <h2 id="leaderboard-title" class="text-center text-[#fde047] pixel-text text-[10px] md:text-xs mb-3 drop-shadow-md">🏆 ТОП НЕДЕЛИ 🏆</h2>
-                <div id="leaderboard-list" class="overflow-y-auto max-h-[160px] space-y-2 font-['Press_Start_2P'] text-[8px] md:text-[10px] pr-2">
-                    <div id="leaderboard-loading-msg" class="text-center text-white/70 py-2 leading-loose">Загрузка рекордов...</div>
-                </div>
-            </div>
-
-            <button id="start-btn" class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs">
-                ИГРАТЬ
+        <div class="flex items-center justify-center gap-3">
+          <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
+            <button
+              class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white"
+              data-lang="ru"
+            >
+              RU
             </button>
+            <button
+              class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white"
+              data-lang="en"
+            >
+              EN
+            </button>
+          </div>
+          <button
+            class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"
+          ></button>
         </div>
-    </div>
 
-    <div id="pause-overlay" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white z-50 p-4">
-        <div class="bg-[#3b82f6] border-4 border-white p-6 max-w-sm w-full flex flex-col items-center shadow-[8px_8px_0_rgba(0,0,0,0.6)] gap-5">
-            <h1 id="pause-title" class="text-xl md:text-2xl text-[#fde047] pixel-text text-center"></h1>
+        <div id="name-input-container" class="w-full flex flex-col items-center">
+          <input
+            type="text"
+            id="player-name-input"
+            maxlength="15"
+            placeholder="ВВЕДИ НИК"
+            class="text-slate-800 bg-slate-100 text-center font-['Press_Start_2P'] text-base md:text-xs p-3 border-4 border-slate-800 focus:outline-none focus:bg-white w-full max-w-xs shadow-[4px_4px_0_rgba(0,0,0,0.3)] transition-colors placeholder-slate-400"
+          />
+        </div>
 
-            <div class="flex items-center justify-center gap-3">
-                <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
-                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="ru">RU</button>
-                    <button class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white" data-lang="en">EN</button>
-                </div>
-                <button class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"></button>
+        <div
+          id="leaderboard-section"
+          class="w-full bg-blue-900/60 p-3 border-4 border-slate-800 shadow-[4px_4px_0_rgba(0,0,0,0.3)] hidden"
+        >
+          <h2
+            id="leaderboard-title"
+            class="text-center text-[#fde047] pixel-text text-[10px] md:text-xs mb-3 drop-shadow-md"
+          >
+            🏆 ТОП НЕДЕЛИ 🏆
+          </h2>
+          <div
+            id="leaderboard-list"
+            class="overflow-y-auto max-h-[160px] space-y-2 font-['Press_Start_2P'] text-[8px] md:text-[10px] pr-2"
+          >
+            <div id="leaderboard-loading-msg" class="text-center text-white/70 py-2 leading-loose">
+              Загрузка рекордов...
             </div>
-
-            <button id="resume-btn" class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs"></button>
+          </div>
         </div>
+
+        <button
+          id="start-btn"
+          class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs"
+        >
+          ИГРАТЬ
+        </button>
+      </div>
     </div>
 
-    <div id="touch-controls" class="absolute bottom-6 left-0 w-full px-6 justify-between items-end z-40 pointer-events-none">
-        <div class="flex gap-4 pointer-events-auto">
-            <button id="btn-left" class="btn-touch w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold pb-1">&#9664;</button>
-            <button id="btn-right" class="btn-touch w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold pb-1">&#9654;</button>
+    <div
+      id="pause-overlay"
+      class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white z-50 p-4"
+    >
+      <div
+        class="bg-[#3b82f6] border-4 border-white p-6 max-w-sm w-full flex flex-col items-center shadow-[8px_8px_0_rgba(0,0,0,0.6)] gap-5"
+      >
+        <h1 id="pause-title" class="text-xl md:text-2xl text-[#fde047] pixel-text text-center"></h1>
+
+        <div class="flex items-center justify-center gap-3">
+          <div class="flex gap-1 border-2 border-white/40 p-1 rounded bg-black/20">
+            <button
+              class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white"
+              data-lang="ru"
+            >
+              RU
+            </button>
+            <button
+              class="lang-btn px-2 py-1 text-[8px] md:text-[10px] pixel-text rounded transition-colors text-white"
+              data-lang="en"
+            >
+              EN
+            </button>
+          </div>
+          <button
+            class="audio-toggle-btn bg-blue-500/80 hover:bg-blue-400 text-white pixel-text px-3 py-2 rounded-lg border-2 border-white text-[8px] md:text-[10px] transition-colors"
+          ></button>
         </div>
-        <div class="pointer-events-auto">
-            <button id="btn-jump" class="btn-touch w-20 h-20 rounded-full flex justify-center items-center text-3xl text-white font-bold pb-1">&#9650;</button>
-        </div>
+
+        <button
+          id="resume-btn"
+          class="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] border-4 border-slate-800 text-white pixel-text text-xs md:text-sm shadow-[4px_4px_0_rgba(0,0,0,0.3)] active:translate-y-1 active:shadow-[0_0_0_rgba(0,0,0,0.3)] transition-all w-full max-w-xs"
+        ></button>
+      </div>
+    </div>
+
+    <div
+      id="touch-controls"
+      class="absolute bottom-6 left-0 w-full px-6 justify-between items-end z-40 pointer-events-none"
+    >
+      <div class="flex gap-4 pointer-events-auto">
+        <button
+          id="btn-left"
+          class="btn-touch w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold pb-1"
+        >
+          &#9664;
+        </button>
+        <button
+          id="btn-right"
+          class="btn-touch w-16 h-16 rounded-full flex justify-center items-center text-2xl text-white font-bold pb-1"
+        >
+          &#9654;
+        </button>
+      </div>
+      <div class="pointer-events-auto">
+        <button
+          id="btn-jump"
+          class="btn-touch w-20 h-20 rounded-full flex justify-center items-center text-3xl text-white font-bold pb-1"
+        >
+          &#9650;
+        </button>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>
-</body>
+  </body>
 </html>

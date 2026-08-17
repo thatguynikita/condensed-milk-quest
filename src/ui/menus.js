@@ -172,7 +172,9 @@ export function initMenus(player, level) {
   startBtn.addEventListener('click', startGame);
   resumeBtn.addEventListener('click', resumeGame);
   pauseBtn.addEventListener('click', togglePause);
-  document.querySelectorAll('.audio-toggle-btn').forEach((btn) => btn.addEventListener('click', handleToggleMute));
+  document
+    .querySelectorAll('.audio-toggle-btn')
+    .forEach((btn) => btn.addEventListener('click', handleToggleMute));
   document
     .querySelectorAll('.lang-btn')
     .forEach((btn) => btn.addEventListener('click', () => handleSetLanguage(btn.dataset.lang)));
