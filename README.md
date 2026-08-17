@@ -70,11 +70,16 @@ npm run dev
 
 The leaderboard needs a Firebase project (Firestore + Anonymous Auth
 enabled). These are Web SDK config values, not secrets — access is
-controlled by Firestore security rules — but they're read from environment
-variables rather than hardcoded, so `.env` isn't committed. Copy
-`.env.example` to `.env` and fill in your project's values. Without a valid
-`.env`, the game still runs fine; the leaderboard just silently no-ops
-(`initLeaderboard()` catches init failures).
+controlled by Firestore security rules and API key restrictions, not by
+hiding them — but they're read from environment variables rather than
+hardcoded, so `.env` isn't committed. Without a valid `.env`, the game still
+runs fine; the leaderboard just silently no-ops (`initLeaderboard()`
+catches init failures).
+
+Setting one up from scratch (project creation, API key restrictions,
+Firestore rules) is covered in
+[`docs/FIREBASE-SETUP.md`](docs/FIREBASE-SETUP.md). If you already have the
+values, just copy `.env.example` to `.env` and fill them in.
 
 ## Scripts
 
