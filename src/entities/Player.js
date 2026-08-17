@@ -149,7 +149,7 @@ export class Player {
       4 + fatH / 6,
       Math.PI / 4 + Math.sin(this.walkCycle) * 0.5,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.fill();
     ctx.fillStyle = '#f59e0b';

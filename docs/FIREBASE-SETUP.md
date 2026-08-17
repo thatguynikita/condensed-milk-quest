@@ -50,11 +50,13 @@ against any other API enabled on the same Google Cloud project.**
 open the key named **"Browser key (auto created by Firebase)"**:
 
 - **Application restrictions → HTTP referrers (web sites)**, add:
+
   ```
   https://cat.nikita.sh/*
   https://nikita.sh/*
   http://localhost:5173/*
   ```
+
   The third one is for local dev (`npm run dev`'s default port — adjust if
   yours differs). Without it, the leaderboard just silently no-ops locally;
   it doesn't break anything else, since `initLeaderboard()` catches init
@@ -68,7 +70,7 @@ open the key named **"Browser key (auto created by Firebase)"**:
     automatically when you turn on Firestore in step 1)
 
 If you ever need to rotate this key (e.g. an old value leaked into git
-history), re-adding a web app in the *same* project reuses the same
+history), re-adding a web app in the _same_ project reuses the same
 `apiKey` — it's scoped to the project, not the individual app registration.
 To get an actually different value, use **Regenerate Key** on this same
 credential instead.

@@ -58,7 +58,7 @@ export function initLeaderboard() {
           },
           () => {
             leaderboardList.innerHTML = `<div class="text-center text-red-400 text-xs py-4 pixel-text">${t('leaderboard_error')}</div>`;
-          }
+          },
         );
       })
       .catch((error) => console.error('Ошибка авторизации:', error));
