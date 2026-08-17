@@ -6,10 +6,6 @@
   <a href="https://cat.nikita.sh"><img src="https://img.shields.io/badge/site-cat.nikita.sh-brightgreen" alt="Live site"></a>
 </p>
 
-<p align="center">
-  <img src="assets/gameplay.gif" width="480" alt="Gameplay: the cat running and jumping across platforms, collecting cans of condensed milk">
-</p>
-
 <p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b></p>
 
 A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
