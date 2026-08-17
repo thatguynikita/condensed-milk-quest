@@ -7,10 +7,6 @@ let isMuted = localStorage.getItem(STORAGE_KEYS.muted) === 'true';
 let melodySynth, bassSynth, meowSynth, slurpNoise, slurpFilter;
 let lastSlurpTime = 0;
 
-export function isAudioInitialized() {
-  return initialized;
-}
-
 export function getIsMuted() {
   return isMuted;
 }
