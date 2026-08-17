@@ -15,6 +15,12 @@
 
 <p align="center"><b><a href="https://cat.nikita.sh">▶ Play it live at cat.nikita.sh</a></b></p>
 
+<p align="center">
+
+https://github.com/user-attachments/assets/6b9a00f7-c4ee-4529-b4a7-5e83acb0486e
+
+</p>
+
 A small browser platformer: collect 30 cans of condensed milk, dodge dogs and
 cacti, reach the flag. Playable standalone, and embedded as an iframe "app"
 inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
