@@ -108,32 +108,22 @@ npm run deploy -- --dry-run   # preview the upload, no network calls
 npm run deploy                 # build + upload dist/ to S3-compatible storage
 ```
 
-`scripts/deploy.mjs` shells out to the AWS CLI (`aws`, must be installed and
-authenticated) and uploads everything under `dist/` via `aws s3api put-object`.
-It works against **both AWS S3 and Yandex Object Storage** — they differ only
-by endpoint, so leave `S3_ENDPOINT` blank for AWS and set it to
+`scripts/deploy.mjs` uploads `dist/` via the AWS CLI (`aws`, must be
+installed). It works against **both AWS S3 and Yandex Object Storage** — they
+differ only by endpoint, so leave `S3_ENDPOINT` blank for AWS and set it to
 `https://storage.yandexcloud.net` for Yandex. `npm run build` runs first
 automatically, so the deployed build is always fresh.
 
-Three things the script does beyond a plain `aws s3 sync`:
+Copy `.env.example` to `.env` and fill in `S3_BUCKET`, `S3_ENDPOINT`,
+`S3_REGION` and your AWS credentials — that's all the setup there is; the
+script passes them straight through to `aws`, so there's nothing to configure
+separately. Leave the credentials blank to fall back to `~/.aws/credentials`.
+The bucket can also be passed as `--bucket <name>`, and is never hardcoded
+anywhere in this repo.
 
-- **`index.html` is uploaded last**, after every hashed asset it references, so
-  it never points at an asset that isn't there yet — and it's skipped entirely
-  if any asset upload failed.
-- **Content types are set explicitly**, charset included (`text/html; charset=utf-8`),
-  rather than guessed from the file extension.
-- **`Cache-Control` is set per file**: hashed assets under `assets/` get
-  `immutable` with a one-year TTL, `index.html` gets `no-cache`, everything else
-  a one-day TTL.
-
-A full deploy also prunes — once every upload succeeds, bucket keys that no
-longer exist in `dist/` are deleted. Passing specific filenames
+A full deploy prunes: once every upload succeeds, bucket keys that no longer
+exist in `dist/` are deleted. Passing specific filenames
 (`npm run deploy -- index.html`) uploads only those and never prunes.
-
-The target bucket isn't hardcoded anywhere in this repo — set `S3_BUCKET` (in
-your local `.env`, or exported in your shell) or pass `--bucket <name>`
-explicitly. See `.env.example` for the full set of variables, and
-`scripts/deploy.mjs`'s header comment for the full flag list.
 
 ## License
 
