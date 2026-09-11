@@ -105,20 +105,25 @@ values, just copy `.env.example` to `.env` and fill them in.
 
 ```bash
 npm run deploy -- --dry-run   # preview the upload, no network calls
-npm run deploy                 # build + upload dist/ to Yandex Object Storage
+npm run deploy                 # build + upload dist/ to S3-compatible storage
 ```
 
-Same approach as the sibling [nikita.sh](https://github.com/thatguynikita/nikita.sh)
-repo: `scripts/deploy.mjs` shells out to the Yandex Cloud CLI (`yc`, must be
-installed and authenticated) and uploads everything under `dist/` via
-`yc storage s3api put-object`, with `index.html` always going last so it
-never points at a hashed asset that isn't uploaded yet. `npm run build`
-runs first automatically, so the deployed build is always fresh.
+`scripts/deploy.mjs` uploads `dist/` via the AWS CLI (`aws`, must be
+installed). It works against **both AWS S3 and Yandex Object Storage** — they
+differ only by endpoint, so leave `S3_ENDPOINT` blank for AWS and set it to
+`https://storage.yandexcloud.net` for Yandex. `npm run build` runs first
+automatically, so the deployed build is always fresh.
 
-The target bucket isn't hardcoded anywhere in this repo — set
-`CAT_NIKITA_BUCKET` (in your local `.env`, or exported in your shell) or
-pass `--bucket <name>` explicitly. See `scripts/deploy.mjs`'s header
-comment for the full flag/env var list.
+Copy `.env.example` to `.env` and fill in `S3_BUCKET`, `S3_ENDPOINT`,
+`S3_REGION` and your AWS credentials — that's all the setup there is; the
+script passes them straight through to `aws`, so there's nothing to configure
+separately. Leave the credentials blank to fall back to `~/.aws/credentials`.
+The bucket can also be passed as `--bucket <name>`, and is never hardcoded
+anywhere in this repo.
+
+A full deploy prunes: once every upload succeeds, bucket keys that no longer
+exist in `dist/` are deleted. Passing specific filenames
+(`npm run deploy -- index.html`) uploads only those and never prunes.
 
 ## License
 

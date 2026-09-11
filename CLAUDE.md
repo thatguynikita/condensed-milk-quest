@@ -17,7 +17,7 @@ npm run preview           # serve the dist/ build locally
 npm run lint                # ESLint (flat config, eslint.config.js)
 npm run format                # Prettier, writes in place
 npm run test                    # Vitest, runs everything in tests/
-npm run deploy                    # build, then upload dist/ to Yandex Object Storage
+npm run deploy                    # build, then upload dist/ to S3 (AWS or Yandex)
 ```
 
 Run a single test file: `npx vitest run tests/level.test.js`. Run by name pattern: `npx vitest run -t "pattern"`.
@@ -26,7 +26,7 @@ Run a single test file: `npx vitest run tests/level.test.js`. Run by name patter
 
 Without a valid `.env`, the game still runs fine — `initLeaderboard()` catches Firebase init failures and the leaderboard just silently no-ops.
 
-CI (`.github/workflows/ci.yml`) runs lint + test + build on every push/PR — it doesn't deploy. `npm run deploy` (see `scripts/deploy.mjs`) shells out to the `yc` CLI and is meant to be run manually; the target bucket is never hardcoded, only `CAT_NIKITA_BUCKET` (local `.env`) or `--bucket`.
+CI (`.github/workflows/ci.yml`) runs lint + test + build on every push/PR — it doesn't deploy. `npm run deploy` (see `scripts/deploy.mjs`) shells out to the AWS CLI (`aws s3api`) and is meant to be run manually. It targets any S3-compatible storage — AWS S3 and Yandex Object Storage differ only by `S3_ENDPOINT` (blank means AWS). The target bucket is never hardcoded, only `S3_BUCKET` (local `.env`) or `--bucket`. The script deliberately does more than `aws s3 sync` would: explicit per-file content types (charset included), per-file `Cache-Control`, `index.html` uploaded last and skipped if any asset failed, and a prune step that deletes bucket keys no longer in `dist/` (skipped when deploying a subset of files).
 
 ## Architecture
 
