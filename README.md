@@ -105,20 +105,35 @@ values, just copy `.env.example` to `.env` and fill them in.
 
 ```bash
 npm run deploy -- --dry-run   # preview the upload, no network calls
-npm run deploy                 # build + upload dist/ to Yandex Object Storage
+npm run deploy                 # build + upload dist/ to S3-compatible storage
 ```
 
-Same approach as the sibling [nikita.sh](https://github.com/thatguynikita/nikita.sh)
-repo: `scripts/deploy.mjs` shells out to the Yandex Cloud CLI (`yc`, must be
-installed and authenticated) and uploads everything under `dist/` via
-`yc storage s3api put-object`, with `index.html` always going last so it
-never points at a hashed asset that isn't uploaded yet. `npm run build`
-runs first automatically, so the deployed build is always fresh.
+`scripts/deploy.mjs` shells out to the AWS CLI (`aws`, must be installed and
+authenticated) and uploads everything under `dist/` via `aws s3api put-object`.
+It works against **both AWS S3 and Yandex Object Storage** — they differ only
+by endpoint, so leave `S3_ENDPOINT` blank for AWS and set it to
+`https://storage.yandexcloud.net` for Yandex. `npm run build` runs first
+automatically, so the deployed build is always fresh.
 
-The target bucket isn't hardcoded anywhere in this repo — set
-`CAT_NIKITA_BUCKET` (in your local `.env`, or exported in your shell) or
-pass `--bucket <name>` explicitly. See `scripts/deploy.mjs`'s header
-comment for the full flag/env var list.
+Three things the script does beyond a plain `aws s3 sync`:
+
+- **`index.html` is uploaded last**, after every hashed asset it references, so
+  it never points at an asset that isn't there yet — and it's skipped entirely
+  if any asset upload failed.
+- **Content types are set explicitly**, charset included (`text/html; charset=utf-8`),
+  rather than guessed from the file extension.
+- **`Cache-Control` is set per file**: hashed assets under `assets/` get
+  `immutable` with a one-year TTL, `index.html` gets `no-cache`, everything else
+  a one-day TTL.
+
+A full deploy also prunes — once every upload succeeds, bucket keys that no
+longer exist in `dist/` are deleted. Passing specific filenames
+(`npm run deploy -- index.html`) uploads only those and never prunes.
+
+The target bucket isn't hardcoded anywhere in this repo — set `S3_BUCKET` (in
+your local `.env`, or exported in your shell) or pass `--bucket <name>`
+explicitly. See `.env.example` for the full set of variables, and
+`scripts/deploy.mjs`'s header comment for the full flag list.
 
 ## License
 
