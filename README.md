@@ -21,109 +21,90 @@ https://github.com/user-attachments/assets/6b9a00f7-c4ee-4529-b4a7-5e83acb0486e
 
 </p>
 
-A small browser platformer, playable standalone or embedded as an iframe
-"app" inside [nikita.sh](https://github.com/thatguynikita/nikita.sh)'s
-terminal-themed portfolio.
+A small browser platformer in vanilla JS and the Canvas 2D API — no game
+engine. Playable standalone or embedded as an iframe "app" inside
+[nikita.sh](https://github.com/thatguynikita/nikita.sh)'s terminal-themed
+portfolio.
 
 - Collect 30 cans of condensed milk, dodge dogs and cacti, race to the flag
-- Bilingual — Russian and English, switchable from the menu
-- Pause menu, plus on-screen touch controls for mobile
+- Russian and English, switchable from the menu
+- Pause menu and on-screen touch controls for mobile
 - Weekly leaderboard, backed by Firebase
-
-Built with vanilla JS and the Canvas 2D API — no game engine — bundled with
-[Vite](https://vitejs.dev).
 
 ## Stack
 
-- Vanilla JS (ES modules), Canvas 2D for rendering
-- [Vite](https://vitejs.dev) for dev server + build
-- [Tailwind CSS v4](https://tailwindcss.com) for UI chrome (menus, HUD, buttons)
-- [Tone.js](https://tonejs.github.io) for the procedurally-triggered chiptune audio
-- [Firebase](https://firebase.google.com) (Firestore + anonymous Auth) for the leaderboard
-- [Vitest](https://vitest.dev) for unit tests, ESLint + Prettier for linting/formatting
+Vite, Tailwind CSS v4 for the menus and HUD, Tone.js for the chiptune audio,
+Firebase (Firestore + anonymous Auth) for the leaderboard. Vitest, ESLint and
+Prettier for checks.
 
 ## Architecture
 
-| Path                       | What's there                                                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `index.html`               | DOM skeleton only — canvas, menus, touch controls                                                                     |
-| `src/main.js`              | Composition root: owns the game loop, input listeners, instantiates player/level/butterflies                          |
-| `src/state.js`             | Shared runtime state (game phase, camera, keys, timers)                                                               |
-| `src/config.js`            | Tunable gameplay constants (physics, level generation, timers)                                                        |
-| `src/styles/main.css`      | Tailwind + the handful of custom CSS rules (pixel-text outline, touch-control styling, `pointer: coarse` media query) |
-| `src/entities/*.js`        | One file per game object: `Player`, `DogEnemy`, `CactusEnemy`, `CondensedMilk`, `BouncingMilk`, `Butterfly`           |
-| `src/level/Level.js`       | Procedural level generation + world rendering                                                                         |
-| `src/level/collision.js`   | Shared AABB overlap check, used by every collision test                                                               |
-| `src/render/draw.js`       | Per-frame draw orchestration (sky, clouds, world, entities)                                                           |
-| `src/ui/hud.js`            | Score/timer HUD rendering                                                                                             |
-| `src/ui/menus.js`          | Start/pause/win overlays, language & sound toggles, `startGame`/`gameWin`/pause-resume                                |
-| `src/ui/touchControls.js`  | Mobile on-screen button bindings                                                                                      |
-| `src/i18n/translations.js` | RU/EN copy + `t()`/`getLang()`/`setLang()`                                                                            |
-| `src/audio/synths.js`      | Tone.js synth setup and all sound-effect triggers                                                                     |
-| `src/net/leaderboard.js`   | Firebase init, score read/write, leaderboard rendering                                                                |
-| `tests/`                   | Vitest unit tests (collision, level generation, i18n parity)                                                          |
-
-Gameplay tuning knobs live in `config.js`; purely cosmetic pixel-art numbers
-(sprite coordinates inside each entity's `draw()`) stay inline, since those
-are art, not balance.
+| Path                                  | What's there                                             |
+| ------------------------------------- | -------------------------------------------------------- |
+| `index.html`                          | DOM skeleton: canvas, menus, touch controls              |
+| `src/main.js`                         | Game loop, input handling, wiring — the composition root |
+| `src/state.js`                        | Shared runtime state (game phase, camera, keys, timers)  |
+| `src/config.js`                       | Gameplay constants (physics, level generation, timers)   |
+| `src/entities/`                       | One file per game object                                 |
+| `src/level/`                          | Procedural level generation, rendering, collision        |
+| `src/render/`, `src/ui/`              | Per-frame drawing; HUD, menus, touch controls            |
+| `src/i18n/`, `src/audio/`, `src/net/` | RU/EN copy, Tone.js synths, Firebase leaderboard         |
+| `tests/`                              | Vitest unit tests                                        |
 
 ## Local development
 
 ```bash
 npm install
-cp .env.example .env   # fill in Firebase config (see below)
+cp .env.example .env   # Firebase config — see below
 npm run dev
 ```
 
-### Firebase config
-
-The leaderboard needs a Firebase project (Firestore + Anonymous Auth
-enabled). These are Web SDK config values, not secrets — access is
-controlled by Firestore security rules and API key restrictions, not by
-hiding them — but they're read from environment variables rather than
-hardcoded, so `.env` isn't committed. Without a valid `.env`, the game still
-runs fine; the leaderboard just silently no-ops (`initLeaderboard()`
-catches init failures).
-
-Setting one up from scratch (project creation, API key restrictions,
-Firestore rules) is covered in
-[`docs/FIREBASE-SETUP.md`](docs/FIREBASE-SETUP.md). If you already have the
-values, just copy `.env.example` to `.env` and fill them in.
+The leaderboard needs a Firebase project with Firestore and Anonymous Auth.
+The config values are the public Web SDK kind — access is enforced by
+Firestore rules, not by secrecy — but they live in `.env` so they aren't
+committed. Without them the game runs fine; the leaderboard is just disabled.
+Setup from scratch: [`docs/FIREBASE-SETUP.md`](docs/FIREBASE-SETUP.md).
 
 ## Scripts
 
-| Command           | What it does                    |
-| ----------------- | ------------------------------- |
-| `npm run dev`     | Start the Vite dev server       |
-| `npm run build`   | Production build to `dist/`     |
-| `npm run preview` | Serve the `dist/` build locally |
-| `npm run lint`    | ESLint                          |
-| `npm run format`  | Prettier, writes in place       |
-| `npm run test`    | Vitest                          |
+| Command                           | What it does                                      |
+| --------------------------------- | ------------------------------------------------- |
+| `npm run dev`                     | Vite dev server                                   |
+| `npm run build`                   | Production build to `dist/`                       |
+| `npm run preview`                 | Serve `dist/` locally                             |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                 |
+| `npm run test`                    | Vitest                                            |
+| `npm run deploy`                  | Build and upload `dist/` to S3-compatible storage |
 
 ## Deploy
 
+### S3 / Yandex Object Storage
+
 ```bash
-npm run deploy -- --dry-run   # preview the upload, no network calls
-npm run deploy                 # build + upload dist/ to S3-compatible storage
+npm run deploy -- --dry-run   # preview, no network calls
+npm run deploy                 # build + upload
 ```
 
-`scripts/deploy.mjs` uploads `dist/` via the AWS CLI (`aws`, must be
-installed). It works against **both AWS S3 and Yandex Object Storage** — they
-differ only by endpoint, so leave `S3_ENDPOINT` blank for AWS and set it to
-`https://storage.yandexcloud.net` for Yandex. `npm run build` runs first
-automatically, so the deployed build is always fresh.
+Needs the AWS CLI, plus `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION` and AWS
+credentials in `.env` (see `.env.example`). AWS S3 and Yandex differ only by
+endpoint — leave `S3_ENDPOINT` blank for AWS. A full deploy also removes
+bucket files no longer in `dist/`; passing filenames
+(`npm run deploy -- index.html`) uploads just those.
 
-Copy `.env.example` to `.env` and fill in `S3_BUCKET`, `S3_ENDPOINT`,
-`S3_REGION` and your AWS credentials — that's all the setup there is; the
-script passes them straight through to `aws`, so there's nothing to configure
-separately. Leave the credentials blank to fall back to `~/.aws/credentials`.
-The bucket can also be passed as `--bucket <name>`, and is never hardcoded
-anywhere in this repo.
+### Cloudflare Pages
 
-A full deploy prunes: once every upload succeeds, bucket keys that no longer
-exist in `dist/` are deleted. Passing specific filenames
-(`npm run deploy -- index.html`) uploads only those and never prunes.
+No CLI — Cloudflare builds from the repo. **Workers & Pages → Create
+application → Connect with GitHub**, then:
+
+| field          | value                                                                      |
+| -------------- | -------------------------------------------------------------------------- |
+| Project name   | `condensed-milk-quest` (must match `name` in `wrangler.json`)              |
+| Build command  | `npm run build`                                                            |
+| Deploy command | `npx wrangler deploy`                                                      |
+| Variables      | the `VITE_*` values from `.env.example`, or the leaderboard stays disabled |
+
+`public/_headers` sets the same cache headers as the S3 deploy. The site is at
+`condensed-milk-quest.<account>.workers.dev` until you attach a domain.
 
 ## License
 
