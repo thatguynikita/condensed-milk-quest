@@ -28,6 +28,8 @@ Without a valid `.env`, the game still runs fine — `initLeaderboard()` catches
 
 CI (`.github/workflows/ci.yml`) runs lint + test + build on every push/PR — it doesn't deploy. `npm run deploy` (see `scripts/deploy.mjs`) shells out to the AWS CLI (`aws s3api`) and is meant to be run manually. It targets any S3-compatible storage — AWS S3 and Yandex Object Storage differ only by `S3_ENDPOINT` (blank means AWS). The target bucket is never hardcoded, only `S3_BUCKET` (local `.env`) or `--bucket`. The script deliberately does more than `aws s3 sync` would: explicit per-file content types (charset included), per-file `Cache-Control`, `index.html` uploaded last and skipped if any asset failed, and a prune step that deletes bucket keys no longer in `dist/` (skipped when deploying a subset of files).
 
+The repo is also connectable to Cloudflare Pages from the dashboard (Workers with static assets): `wrangler.json` names the project and points at `dist/`, with no Worker code and no local deploy command — Cloudflare runs `npm run build` and `npx wrangler deploy` itself. `public/_headers` carries the same three cache tiers as `cacheControlFor()` in the S3 script; keep them in step if either changes. It's extensionless and Cloudflare-only, so the S3 script skips it by name (`PAGES_ONLY`).
+
 ## Architecture
 
 `src/main.js` is the composition root: it owns the `requestAnimationFrame` game loop, all `keydown`/`keyup`/`resize` listeners, and instantiates `player`/`level`/`butterflies`. Those entity instances are **not** kept in shared state — `main.js` passes them explicitly into whatever function needs them (`player.update(level)`, `draw(ctx, canvas, level, player, butterflies)`, etc.).

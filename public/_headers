@@ -1,0 +1,14 @@
+# Cache rules for Cloudflare Pages (Workers static assets read this file);
+# other hosts ignore it. Same three tiers scripts/deploy.mjs sets on S3.
+#
+# Every matching rule contributes its headers, so a narrower rule first
+# detaches (`! `) the Cache-Control a wider one added, then sets its own.
+# Order: general to specific.
+/*
+  Cache-Control: public, max-age=86400
+/
+  ! Cache-Control
+  Cache-Control: no-cache
+/assets/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable

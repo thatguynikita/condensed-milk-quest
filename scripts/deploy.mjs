@@ -86,6 +86,10 @@ function cacheControlFor(key) {
 
 // -------- manifest: everything under dist/, index.html forced last --------
 
+// Files only Cloudflare Pages reads (public/_headers, _redirects). They're
+// meaningless in a bucket and extensionless, so they're skipped by name.
+const PAGES_ONLY = new Set(['_headers', '_redirects']);
+
 function buildManifest() {
   if (!existsSync(DIST)) {
     console.error(
@@ -96,6 +100,7 @@ function buildManifest() {
   const files = [];
   for (const name of readdirSync(DIST, { recursive: true })) {
     if (name.split(/[\\/]/).some((part) => part.startsWith('.'))) continue; // .DS_Store etc.
+    if (PAGES_ONLY.has(name)) continue;
     const full = join(DIST, name);
     if (statSync(full).isDirectory()) continue;
     files.push(relative(DIST, full).split('\\').join('/'));
